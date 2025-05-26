@@ -94,13 +94,13 @@ export default function Swipe({ items, type }: SwipeProps) {
         modules={[Navigation, Pagination, EffectFade]}
         spaceBetween={30}
         slidesPerView={1}
-        loop={true}
+        loop={items.length > 1}
         pagination={{
           clickable: true,
           dynamicBullets: true,
         }}
         navigation={{
-          enabled: true,
+          enabled: items.length > 1,
           hideOnClick: false,
         }}
         effect={'fade'}
@@ -108,7 +108,7 @@ export default function Swipe({ items, type }: SwipeProps) {
           crossFade: true
         }}
         centeredSlides={true}
-        allowTouchMove={true}
+        allowTouchMove={items.length > 1}
         watchSlidesProgress={true}
       >
         {type === 'event' ? (
