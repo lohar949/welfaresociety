@@ -37,22 +37,48 @@ const fjalla = Fjalla_One({
 export default function Home() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/fetch')
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.details || 'Failed to fetch data');
+        }
+        return res.json();
+      })
       .then(json => {
-        setData(json);
+        // Initialize empty arrays if any data is missing
+        const safeData: ApiResponse = {
+          achievements: json.achievements || [],
+          members: json.members || [],
+          mentors: json.mentors || [],
+          events: json.events || []
+        };
+        setData(safeData);
         setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching data:', err);
+        setError(err.message);
         setLoading(false);
+        // Initialize empty data on error
+        setData({
+          achievements: [],
+          members: [],
+          mentors: [],
+          events: []
+        });
       });
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   return (<>
@@ -77,6 +103,14 @@ export default function Home() {
           <div className='border-2 p-[2px] border-dashed bg-red-300/50'>JOIN US</div>
           <div className='border-2 p-[2px] border-dashed bg-orange-300'>DONATION</div>
         </div>
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative m-4" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
+
         <div className={`flex justify-center ${lobster.className} m-[10px]`}>
           <p>EVENTS</p>
         </div>

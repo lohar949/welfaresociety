@@ -64,6 +64,30 @@ export default function Swipe({ items, type }: SwipeProps) {
           background-color: #000;
           opacity: 1;
         }
+
+        .swiper-slide {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+
+        .image-container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .image-container img {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+        }
       `}</style>
       <Swiper
         className='bg-black/5 h-full rounded-xl'
@@ -89,27 +113,31 @@ export default function Swipe({ items, type }: SwipeProps) {
       >
         {type === 'event' ? (
           eventItems.map((imageUrl, index) => (
-            <SwiperSlide key={index} className="flex items-center justify-center p-4 h-full">
-              <div className="w-full h-full relative rounded-lg overflow-hidden">
+            <SwiperSlide key={index}>
+              <div className="image-container">
                 <img
                   src={imageUrl}
                   alt={`Event ${index + 1}`}
-                  className="w-full h-full object-contain"
+                  loading="lazy"
                 />
               </div>
             </SwiperSlide>
           ))
         ) : (
           personItems.map((item, index) => (
-            <SwiperSlide key={index} className="flex flex-col items-center justify-center p-4">
-              <div className="w-full h-full flex flex-col items-center">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="w-full h-[70%] object-cover rounded-lg"
-                />
-                <h3 className="text-xl font-bold mt-4">{item.name}</h3>
-                <p className="text-gray-600 mt-2">{item.achievement}</p>
+            <SwiperSlide key={index}>
+              <div className="flex flex-col items-center justify-center w-full h-full p-4">
+                <div className="image-container h-[70%]">
+                  <img 
+                    src={item.image} 
+                    alt={item.name}
+                    loading="lazy"
+                  />
+                </div>
+                <div className="text-center mt-4">
+                  <h3 className="text-xl font-bold">{item.name}</h3>
+                  <p className="text-gray-600 mt-2">{item.achievement}</p>
+                </div>
               </div>
             </SwiperSlide>
           ))
