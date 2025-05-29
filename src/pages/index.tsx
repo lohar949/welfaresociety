@@ -115,8 +115,8 @@ export default function Home() {
           <div className='border-2 p-[2px] border-dashed'>
             <Link rel="stylesheet" href="#about">ABOUT US</Link>
           </div>
-          <div className='border-2 p-[2px] border-dashed bg-red-300/50'><Link href="https://docs.google.com/forms/d/e/1FAIpQLSeQSKkNImEk8TMJSWhi6hodyNi9C8l8v1d-yAqOxk2ixavrww/viewform?usp=preview">JOIN US</Link></div>
-          <div className='border-2 p-[2px] border-dashed bg-orange-300'><Link href="https://docs.google.com/forms/d/e/1FAIpQLSeT_2tfsqPbbv7xjMAtajTLSe8zbHIg1sqs8Xjariavruy2jw/viewform?usp=header">DONATION</Link></div>
+          <div className='border-2 p-[2px] border-dashed bg-red-300/50'><Link href="https://docs.google.com/forms/d/e/1FAIpQLSeQSKkNImEk8TMJSWhi6hodyNi9C8l8v1d-yAqOxk2ixavrww/viewform?usp=preview" target="_blank">JOIN US</Link></div>
+          <div className='border-2 p-[2px] border-dashed bg-orange-300'><Link href="https://docs.google.com/forms/d/e/1FAIpQLSeT_2tfsqPbbv7xjMAtajTLSe8zbHIg1sqs8Xjariavruy2jw/viewform?usp=header" target="_blank">DONATION</Link></div>
         </div>
 
         {error && (
@@ -160,7 +160,7 @@ export default function Home() {
       </div>
       <Foot />
       <div className={`flex justify-center border-2 border-dashed bg-red-300/50 backdrop-blur-md m-[10px] ${fjalla.className}`}>
-       <Link href="https://docs.google.com/forms/d/e/1FAIpQLSeQSKkNImEk8TMJSWhi6hodyNi9C8l8v1d-yAqOxk2ixavrww/viewform?usp=preview">JOIN US</Link>
+       <Link href="https://docs.google.com/forms/d/e/1FAIpQLSeQSKkNImEk8TMJSWhi6hodyNi9C8l8v1d-yAqOxk2ixavrww/viewform?usp=preview" target='_blank'>JOIN US</Link>
       </div>
     </div>
   </>);
