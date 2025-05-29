@@ -12,7 +12,7 @@ function Foot() {
                 className="rounded-full w-24 h-24 object-cover"
               />
              <p className="text-white font-medium m-[5px]">Saleem Mohammad</p>
-             <p className="text-white font-medium m-[1px]">MANIPUR ALUMNI </p>
+             <p className="text-white font-medium m-[1px]">NIT MANIPUR ALUMNI </p>
              <p className="text-white font-medium m-[1px]">(Works at NIT HAMIRPUR)</p>
       </div>
        <div className='flex flex-col justify-center items-center rounded-xl bg-slate-600/70 p-[16px] m-[20px] w-[240px]  h-[200px]'>
