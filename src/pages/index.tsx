@@ -39,6 +39,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add a helper function to check if an image URL is valid
+  const isValidImageUrl = (url: string | null | undefined): boolean => {
+    return typeof url === 'string' && url.trim().length > 0;
+  };
+
   useEffect(() => {
     fetch('/api/fetch')
       .then(async res => {
@@ -56,6 +61,7 @@ export default function Home() {
           mentors: json.mentors || [],
           events: json.events || []
         };
+        console.log('Received members data:', safeData.members);
         setData(safeData);
         setLoading(false);
       })
@@ -84,9 +90,15 @@ export default function Home() {
   return (<>
     <div>
       <div className="flex flex-col sm:flex-row items-center m-[10px]" id='loh'>
-        <img src="/logo.jpeg" alt="Logo" width={100} height={100}
-          className="rounded-full"
-        />
+        {isValidImageUrl("/logo.jpeg") && (
+          <img 
+            src="/logo.jpeg" 
+            alt="Logo" 
+            width={100} 
+            height={100}
+            className="rounded-full"
+          />
+        )}
         <div className='flex flex-col'>
         <p className={`text-4xl text-center xl:pl-[20vw] ${oswald.className}`}>Lohar samaj Education & welfare Society</p> 
         <div className=' text-center xl:pl-[20vw]  '>Hum badlenge samaj shiksha aur seva ke saath</div> 
@@ -117,25 +129,25 @@ export default function Home() {
         <div className={`flex justify-center ${lobster.className} m-[10px]`}>
           <p>EVENTS</p>
         </div>
-        <div className='h-[60vh] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
+        <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.events} type="event" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px]`}>
           <p>ACHIEVERS</p>
         </div>
-        <div className='h-[60vh] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
+        <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.achievements} type="person" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px]`}>
           <p>MENTORS</p>
         </div>
-        <div className='h-[60vh] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
+        <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.mentors} type="person" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px]`}>
           <p>MEMBERS</p>
         </div>
-        <div className='h-[60vh] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
+        <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.members} type="person" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px]`} id='about'>

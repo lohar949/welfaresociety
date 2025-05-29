@@ -59,8 +59,10 @@ const getDriveClient = (): drive_v3.Drive => {
   }
 };
 
-const getImageUrl = (fileId: string): string =>
-  `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+const getImageUrl = (fileId: string | null | undefined): string | null => {
+  if (!fileId) return null;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+};
 
 const listFolderFiles = async (
   drive: drive_v3.Drive,
@@ -77,18 +79,41 @@ const getFileContent = async (
   drive: drive_v3.Drive,
   fileId: string
 ): Promise<string> => {
-  const res = await drive.files.get(
-    { fileId, alt: 'media' },
-    { responseType: 'stream' }
-  );
+  try {
+    // First, get the file metadata to check its mimeType
+    const fileMetadata = await drive.files.get({
+      fileId,
+      fields: 'mimeType'
+    });
 
-  return new Promise((resolve, reject) => {
-    let data = '';
-    (res.data as Readable)
-      .on('data', (chunk) => (data += chunk))
-      .on('end', () => resolve(data))
-      .on('error', (err) => reject(err));
-  });
+    const mimeType = fileMetadata.data.mimeType;
+
+    // If it's a Google Docs file
+    if (mimeType?.includes('application/vnd.google-apps')) {
+      const res = await drive.files.export({
+        fileId,
+        mimeType: 'text/plain'
+      });
+      return res.data as string;
+    }
+    
+    // For binary files (like plain text files)
+    const res = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' }
+    );
+
+    return new Promise((resolve, reject) => {
+      let data = '';
+      (res.data as Readable)
+        .on('data', (chunk) => (data += chunk))
+        .on('end', () => resolve(data))
+        .on('error', (err) => reject(err));
+    });
+  } catch (error: any) {
+    console.error(`Error getting file content for file ${fileId}:`, error);
+    throw error;
+  }
 };
 
 const parseTextData = (
@@ -100,20 +125,31 @@ const parseTextData = (
     const [indexRaw, nameRaw, ...achievementParts] = line.split(',');
     const index = indexRaw?.trim();
     const name = nameRaw?.trim();
-    const achievement = achievementParts.join(',').trim();
-    if (index && name && achievement) {
+    // If there are achievement parts, join them, otherwise leave achievement empty
+    const achievement = achievementParts.length > 0 ? achievementParts.join(',').trim() : '';
+    
+    if (index && name) {
+      console.log(`Parsing line: index=${index}, name=${name}, achievement=${achievement}`);
       entries.push({ index, name, achievement });
     }
   }
   return entries;
 };
 
-const mapImages = (files: drive_v3.Schema$File[]): Map<string, string> => {
-  const map = new Map<string, string>();
+const mapImages = (files: drive_v3.Schema$File[]): Map<string, string | null> => {
+  const map = new Map<string, string | null>();
+  console.log('Processing files for image mapping:', files);
+  
   for (const file of files) {
-    const match = file.name?.match(/^(\d+)/);
+    // Try to match either just a number or a number followed by extension
+    const match = file.name?.match(/^(\d+)(?:\.|$)/);
     if (match && file.id) {
-      map.set(match[1], getImageUrl(file.id));
+      const index = match[1];
+      const imageUrl = getImageUrl(file.id);
+      console.log(`Mapping image: index=${index}, file=${file.name}, url=${imageUrl}`);
+      map.set(index, imageUrl);
+    } else {
+      console.log(`Skipping file - no valid index pattern: ${file.name}`);
     }
   }
   return map;
@@ -129,6 +165,19 @@ const getFirstTxtFileContent = async (
     throw new Error(`No .txt file found in the "${label}" folder.`);
   }
   return await getFileContent(drive, txtFile.id);
+};
+
+type Person = {
+  name: string;
+  achievement: string;
+  image: string | null;
+};
+
+type ApiResponse = {
+  achievements: Person[];
+  members: Person[];
+  mentors: Person[];
+  events: string[];
 };
 
 export default async function handler(
@@ -175,11 +224,16 @@ export default async function handler(
       getFirstTxtFileContent(drive, mentorNameFiles, 'mentorname'),
     ]);
 
+    console.log('Member text file content:', memberText);
+
     const [aData, memberData, mentorData] = [
       parseTextData(aText),
       parseTextData(memberText),
       parseTextData(mentorText),
     ];
+
+    console.log('Parsed member data:', memberData);
+    console.log('Member image files:', memberImageFiles);
 
     const [aImageMap, memberImageMap, mentorImageMap] = [
       mapImages(aImageFiles),
@@ -187,27 +241,39 @@ export default async function handler(
       mapImages(mentorImageFiles),
     ];
 
-    const achievements = aData.map(({ index, name, achievement }) => ({
-      name,
-      achievement,
-      image: aImageMap.get(index) || '',
-    }));
+    console.log('Member image map:', Array.from(memberImageMap.entries()));
 
-    const members = memberData.map(({ index, name, achievement }) => ({
-      name,
-      achievement,
-      image: memberImageMap.get(index) || '',
-    }));
+    const members = memberData.map(({ index, name, achievement }) => {
+      const image = memberImageMap.get(index);
+      console.log(`Processing member ${name} with index ${index}, found image: ${image}`);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
 
-    const mentors = mentorData.map(({ index, name, achievement }) => ({
-      name,
-      achievement,
-      image: mentorImageMap.get(index) || '',
-    }));
+    const achievements = aData.map(({ index, name, achievement }) => {
+      const image = aImageMap.get(index);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
 
-    const events = eventImageFiles.map((file) =>
-      file.id ? getImageUrl(file.id) : ''
-    );
+    const mentors = mentorData.map(({ index, name, achievement }) => {
+      const image = mentorImageMap.get(index);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
+
+    const events = eventImageFiles
+      .map((file) => file.id ? getImageUrl(file.id) : null)
+      .filter((url): url is string => url !== null);
 
     res.status(200).json({ achievements, members, mentors, events });
   } catch (err: any) {
