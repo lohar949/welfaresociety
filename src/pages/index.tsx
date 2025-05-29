@@ -87,7 +87,10 @@ export default function Home() {
         <img src="/logo.jpeg" alt="Logo" width={100} height={100}
           className="rounded-full"
         />
-        <p className={`text-4xl text-center xl:pl-[20vw] ${oswald.className}`}>Lohar samaj Education & welfare Society</p>
+        <div className='flex flex-col'>
+        <p className={`text-4xl text-center xl:pl-[20vw] ${oswald.className}`}>Lohar samaj Education & welfare Society</p> 
+        <div className=' text-center xl:pl-[20vw]  '>Hum badlenge samaj shiksha aur seva ke saath</div> 
+        </div>
       </div>
       <div className='bg-neutral-100 m-[10px] h-[3px] rounded-sm'>
         <br />
