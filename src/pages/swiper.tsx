@@ -1,6 +1,6 @@
 import React from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination, Navigation, EffectFade } from 'swiper/modules'
+import { Pagination, Navigation, EffectFade, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
@@ -134,7 +134,7 @@ export default function Swipe({ items = [], type }: SwipeProps) {
 
       <Swiper
         className="bg-black/5 h-full w-full rounded-xl"
-        modules={[Navigation, Pagination, EffectFade]}
+        modules={[Navigation, Pagination, EffectFade, Autoplay]}
         spaceBetween={30}
         slidesPerView={1}
         loop={itemCount > 1}
@@ -145,6 +145,11 @@ export default function Swipe({ items = [], type }: SwipeProps) {
         navigation={{
           enabled: itemCount > 1,
           hideOnClick: false,
+        }}
+        autoplay={{
+          delay: 2000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
         }}
         effect={'fade'}
         fadeEffect={{
