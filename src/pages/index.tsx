@@ -126,31 +126,31 @@ export default function Home() {
           </div>
         )}
 
-        <div className={`flex justify-center ${lobster.className} m-[10px]`}>
+        <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
           <p>EVENTS</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.events} type="event" />}
         </div>
-        <div className={`flex justify-center ${lobster.className} m-[10px]`}>
+        <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
           <p>ACHIEVERS</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.achievements} type="person" />}
         </div>
-        <div className={`flex justify-center ${lobster.className} m-[10px]`}>
+        <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
           <p>MENTORS</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.mentors} type="person" />}
         </div>
-        <div className={`flex justify-center ${lobster.className} m-[10px]`}>
+        <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
           <p>MEMBERS</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.members} type="person" />}
         </div>
-        <div className={`flex justify-center ${lobster.className} m-[10px]`} id='about'>
+        <div className={`flex justify-center font-bold m-[10px] text-4xl`} id='about' >
           <p>ABOUT US</p>
         </div>
         <Para />
