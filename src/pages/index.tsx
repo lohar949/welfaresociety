@@ -134,7 +134,14 @@ export default function Home() {
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
           <p>ACHIEVERS</p>
+          
         </div>
+            <div className='flex flex-col items-center justify-center text-xl '>
+              <div className='bg-orange-200 w-[50%] p-[5px] rounded-xl font-bold'>
+            <div>Achievers criteria- 5th & 8th class - A grade or B grade</div>
+            <div>10th,12th, Graduation and Post Graduation- Above 75%</div>
+                    <div>Note- Special recognition for Top 3 of Each class </div>
+                    <div>Note- Special Recognition for social work like Blood donation etc</div></div></div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.achievements} type="person" />}
         </div>
