@@ -191,13 +191,13 @@ export default async function handler(
 
     // Your folder IDs here
     const folderIds = {
-      aimages: '1Bzwok3WJcXVR1J-KHoIA86lGKUhguEq-',
-      anames: '14aDxnGgBkkMj1vCZRshYX7S1nEmSwI_p',
-      memberimage: '1MdfSOaliW0TIZXhz-F-Xd-HnUe9CF-Hk',
-      membername: '1rivM0udLfK4-Z3tH0V8lx0s1rhjyiRjf',
-      events: '1wRrWiwuLR2oTpfF6iraEEcvUjqGb-w7f',
-      mentorname: '1vzLjJ_kUJCiE9olxjS7cJz-pTAKRAro2',
-      mentorimage: '1mTmpFuIrxfidLg4Qa1_vf5MzMECx59Iy',
+      aimages: '12sMt_xNJxd2b4lwoqtJFbhN75o2xhBpn',
+      anames: '1s9-zj9586AlIyGAobNdvgg2h2-xvugmw',
+      memberimage: '1qL3gvi-33FVQXXD8nRRevLXBPZUEdUYY',
+      membername: '19ycErLoIS0cKlYj3uqvQoiLBgQCFjGKQ',
+      events: '1aOgoMDrfgzy9scZo92Cm3n2aCuG6qd5h',
+      mentorname: '1BBgsSV15lP_H-CWrdn8C8FtkAOIIEqUU',
+      mentorimage: '1XhjpirtOpaadWuSzJFepM62dXhoB8CrI',
     };
 
     const [
@@ -218,21 +218,64 @@ export default async function handler(
       listFolderFiles(drive, folderIds.mentorimage),
     ]);
 
-    const [aText, memberText, mentorText] = await Promise.all([
-      getFirstTxtFileContent(drive, aNameFiles, 'anames'),
-      getFirstTxtFileContent(drive, memberNameFiles, 'membername'),
-      getFirstTxtFileContent(drive, mentorNameFiles, 'mentorname'),
+    // Helper to get file content by name
+    // Improved: match exact file names for English/Hindi
+    const getDocxTextByName = async (
+      files: drive_v3.Schema$File[],
+      name: string
+    ): Promise<string> => {
+      // Try exact match first, then partial
+      let file = files.find((f: drive_v3.Schema$File) => f.name?.toLowerCase() === name.toLowerCase());
+      if (!file) {
+        file = files.find((f: drive_v3.Schema$File) => f.name?.toLowerCase().includes(name.toLowerCase()));
+      }
+      if (!file || !file.id) throw new Error(`No file found for ${name}`);
+      console.log(`Reading file for ${name}:`, file.name);
+      return await getFileContent(drive, file.id);
+    };
+
+    // Fetch English and Hindi text for achievements, members, mentors
+    // Use actual file names as seen in your Drive: mentors, mentors1, etc.
+    const [
+      aTextEng,
+      aTextHindi,
+      memberTextEng,
+      memberTextHindi,
+      mentorTextEng,
+      mentorTextHindi
+    ] = await Promise.all([
+      getDocxTextByName(aNameFiles, 'anam'),      // English achievements file name
+      getDocxTextByName(aNameFiles, 'anames1'),    // Hindi achievements file name
+      getDocxTextByName(memberNameFiles, 'member'),      // English members file name
+      getDocxTextByName(memberNameFiles, 'member1'),    // Hindi members file name
+      getDocxTextByName(mentorNameFiles, 'mentors'),      // English mentors file name
+      getDocxTextByName(mentorNameFiles, 'mentors1'),    // Hindi mentors file name
     ]);
 
-    console.log('Member text file content:', memberText);
+    // Log file contents for debugging
+    console.log('aTextEng:', aTextEng);
+    console.log('aTextHindi:', aTextHindi);
+    console.log('memberTextEng:', memberTextEng);
+    console.log('memberTextHindi:', memberTextHindi);
+    console.log('mentorTextEng:', mentorTextEng);
+    console.log('mentorTextHindi:', mentorTextHindi);
 
-    const [aData, memberData, mentorData] = [
-      parseTextData(aText),
-      parseTextData(memberText),
-      parseTextData(mentorText),
+  console.log('Member text file content:', memberTextEng);
+
+    const [aDataEng, aDataHindi, memberDataEng, memberDataHindi, mentorDataEng, mentorDataHindi] = [
+      parseTextData(aTextEng),
+      parseTextData(aTextHindi),
+      parseTextData(memberTextEng),
+      parseTextData(memberTextHindi),
+      parseTextData(mentorTextEng),
+      parseTextData(mentorTextHindi),
     ];
 
-    console.log('Parsed member data:', memberData);
+    // Log parsed data for debugging
+    console.log('aDataEng:', aDataEng);
+    console.log('aDataHindi:', aDataHindi);
+
+  console.log('Parsed member data:', memberDataEng);
     console.log('Member image files:', memberImageFiles);
 
     const [aImageMap, memberImageMap, mentorImageMap] = [
@@ -243,9 +286,17 @@ export default async function handler(
 
     console.log('Member image map:', Array.from(memberImageMap.entries()));
 
-    const members = memberData.map(({ index, name, achievement }) => {
+
+    const members = memberDataEng.map(({ index, name, achievement }) => {
       const image = memberImageMap.get(index);
-      console.log(`Processing member ${name} with index ${index}, found image: ${image}`);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
+    const membersHindi = memberDataHindi.map(({ index, name, achievement }) => {
+      const image = memberImageMap.get(index);
       return {
         name,
         achievement,
@@ -253,7 +304,15 @@ export default async function handler(
       };
     });
 
-    const achievements = aData.map(({ index, name, achievement }) => {
+    const achievements = aDataEng.map(({ index, name, achievement }) => {
+      const image = aImageMap.get(index);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
+    const achievementsHindi = aDataHindi.map(({ index, name, achievement }) => {
       const image = aImageMap.get(index);
       return {
         name,
@@ -262,7 +321,15 @@ export default async function handler(
       };
     });
 
-    const mentors = mentorData.map(({ index, name, achievement }) => {
+    const mentors = mentorDataEng.map(({ index, name, achievement }) => {
+      const image = mentorImageMap.get(index);
+      return {
+        name,
+        achievement,
+        image: image || null,
+      };
+    });
+    const mentorsHindi = mentorDataHindi.map(({ index, name, achievement }) => {
       const image = mentorImageMap.get(index);
       return {
         name,
@@ -275,7 +342,15 @@ export default async function handler(
       .map((file) => file.id ? getImageUrl(file.id) : null)
       .filter((url): url is string => url !== null);
 
-    res.status(200).json({ achievements, members, mentors, events });
+    res.status(200).json({
+      achievements,
+      achievementsHindi,
+      members,
+      membersHindi,
+      mentors,
+      mentorsHindi,
+      events
+    });
   } catch (err: any) {
     console.error('Google Drive fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch data', details: err.message });

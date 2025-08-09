@@ -36,7 +36,7 @@ const fjalla = Fjalla_One({
 
 export default function Home() {
   const [language, setLanguage] = useState('en');
-  const [data, setData] = useState<ApiResponse | null>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,15 +56,8 @@ export default function Home() {
       })
       .then(json => {
         // Initialize empty arrays if any data is missing
-        const safeData: ApiResponse = {
-          achievements: json.achievements || [],
-          members: json.members || [],
-          mentors: json.mentors || [],
-          events: json.events || []
-        };
-        console.log('Received members data:', safeData.members);
-        setData(safeData);
-        setLoading(false);
+  setData(json);
+  setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching data:', err);
@@ -73,8 +66,11 @@ export default function Home() {
         // Initialize empty data on error
         setData({
           achievements: [],
+          achievementsHindi: [],
           members: [],
+          membersHindi: [],
           mentors: [],
+          mentorsHindi: [],
           events: []
         });
       });
@@ -138,38 +134,38 @@ export default function Home() {
         )}
 
         <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
-          <p>{language=="en"?"EVENTS":"कार्यक्रम"}</p>
+          <p>{language==="en" ? "EVENTS" : "कार्यक्रम"}</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
           {data && <Swipe items={data.events} type="event" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
-          <p>{language=="en"?"ACHIEVERS":"उपलब्धि प्राप्तकर्ता"}</p>
+          <p>{language==="en" ? "ACHIEVERS" : "उपलब्धि प्राप्तकर्ता"}</p>
           
         </div>
             <div className='flex flex-col items-center justify-center text-xl '>
               <div className='bg-orange-200 w-[50%] p-[5px] rounded-xl font-bold'>
-            <div>{language=="en"?"Achievers criteria- 5th & 8th class - A grade or B grade":"उपलब्धि मानदंड- 5वीं और 8वीं कक्षा - A ग्रेड या B ग्रेड"}</div>
-            <div>{language=="en"?"10th,12th, Graduation and Post Graduation- Above 75%":"10वीं, 12वीं, स्नातक और स्नातकोत्तर - 75% से अधिक"}</div>
-                    <div>{language=="en"?"Note- Special recognition for Top 3 of Each class ":"नोट- प्रत्येक कक्षा के शीर्ष 3 के लिए विशेष मान्यता"}</div>
-                    <div>{language=="en"?"Note- Special Recognition for social work like Blood donation etc":"नोट- रक्तदान आदि जैसे सामाजिक कार्य के लिए विशेष मान्यता"}</div></div></div>
+            <div>{language==="en" ? "Achievers criteria- 5th & 8th class - A grade or B grade" : "उपलब्धि मानदंड- 5वीं और 8वीं कक्षा - A ग्रेड या B ग्रेड"}</div>
+            <div>{language==="en" ? "10th,12th, Graduation and Post Graduation- Above 75%" : "10वीं, 12वीं, स्नातक और स्नातकोत्तर - 75% से अधिक"}</div>
+            <div>{language==="en" ? "Note- Special recognition for Top 3 of Each class " : "नोट- प्रत्येक कक्षा के शीर्ष 3 के लिए विशेष मान्यता"}</div>
+            <div>{language==="en" ? "Note- Special Recognition for social work like Blood donation etc" : "नोट- रक्तदान आदि जैसे सामाजिक कार्य के लिए विशेष मान्यता"}</div></div></div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
-          {data && <Swipe items={data.achievements} type="person" />}
+          {data && <Swipe items={language === 'hi' ? data.achievementsHindi : data.achievements} type="person" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
-          <p>{language=="en"?"MENTORS":"मार्गदर्शक"}</p>
+          <p>{language==="en" ? "MENTORS" : "मार्गदर्शक"}</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
-          {data && <Swipe items={data.mentors} type="person" />}
+          {data && <Swipe items={language === 'hi' ? data.mentorsHindi : data.mentors} type="person" />}
         </div>
         <div className={`flex justify-center ${lobster.className} m-[10px] text-4xl`}>
-          <p>{language=="en"?"MEMBERS":"सदस्य"}</p>
+          <p>{language==="en" ? "MEMBERS" : "सदस्य"}</p>
         </div>
         <div className='relative h-[90vh] min-h-[600px] ml-[10vw] mr-[10vw] rounded-xl shadow-md bg-orange-100/30 backdrop-blur-md'>
-          {data && <Swipe items={data.members} type="person" />}
+          {data && <Swipe items={language === 'hi' ? data.membersHindi : data.members} type="person" />}
         </div>
         <div className={`flex justify-center font-bold m-[10px] text-4xl`} id='about' >
-          <p>{language=="en"?"ABOUT US":"हमारे बारे में"}</p>
+          <p>{language==="en" ? "ABOUT US" : "हमारे बारे में"}</p>
         </div>
         <Para language={language} />
       </div>
